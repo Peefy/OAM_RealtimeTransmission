@@ -1,6 +1,6 @@
 function [ndatanum, sampleRate]  = getdatanum()
 % 300ms
-sampleTime = 15e-3;
+sampleTime = 600e-6;
 % 1250MHz
 sampleRate = 625e6;
 buffercount = sampleTime / (1 / sampleRate);

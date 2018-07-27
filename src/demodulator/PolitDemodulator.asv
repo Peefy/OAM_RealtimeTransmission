@@ -1,4 +1,4 @@
-function [QPSK, check] = PolitDemodulator(DatCh3, fs)
+function [QPSK,check] = PolitDemodulator(DatCh3,fs)
 
 initial = zeros(1,7);             %≥ı º÷µ
 initial(7) = 1;

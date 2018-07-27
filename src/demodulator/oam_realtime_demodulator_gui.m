@@ -48,13 +48,13 @@ card = 0;
 checkright = 0;
 checktotal = 0;
 channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
-datashownum = 5000;
+datashownum = 1000;
 
 handles.output = hObject;
 
 guidata(hObject, handles);
 
-ImPeriod = 2500 / 1000.0;  % 50ms
+ImPeriod = 300 / 1000.0;  % 50ms
 t = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
 set(handles.figure1, 'DeleteFcn', {@DeleteFcn, t, handles});
 
@@ -93,7 +93,7 @@ channel1Data = Dat_Ch1;
 channel2Data = Dat_Ch2;
 channel3Data = Dat_Ch3;
 
-[demodu, check] = PolitDemodulator(Dat_Ch2, sampleRate);
+[QPSK, check] = PolitDemodulator(Dat_Ch3, sampleRate);
 
 set(figureRecDataCh0, 'XData', time(1:datashownum), 'YData', Dat_Ch0(1:datashownum));
 set(figureRecDataCh1, 'XData', time(1:datashownum), 'YData', Dat_Ch1(1:datashownum));
@@ -102,7 +102,7 @@ set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashown
 fprintf('Demodulator check: %d\n', check);
 checktotal = checktotal + 1;
 if abs(check) == 1023
-    set(figureRecDataCons, 'XData', demodu, 'YData', demodu);
+    set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(2,:));
     checkright = checkright + 1;
 end
 
@@ -149,6 +149,7 @@ global regs
 global errors
 global datashownum
 
+axexrange = 60;
 fontsize = 18;
 
 open_card(handles);
@@ -159,7 +160,7 @@ sampleTime = 1 / sampleRate;
 time = 0 : sampleTime : (ndatanum - 1) * sampleTime;  
 [Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3] = ...
     card_read_data(card, regs, errors, sampleRate);
-[demodu, check] = PolitDemodulator(Dat_Ch2, sampleRate);
+[QPSK, check] = PolitDemodulator(Dat_Ch3, sampleRate);
 
 fprintf('Demodulator check ok! check:%d\n', check)
 
@@ -174,11 +175,12 @@ set(gca, 'FontSize', fontsize);
 
 axes(handles.axes1);
 if abs(check) == 1023
-    figureRecDataCons = scatter(demodu, demodu);
+    figureRecDataCons = scatter(QPSK(1,:), QPSK(2,:));
 else
     figureRecDataCons = scatter([-8, 8], [-8, 8]);
 end
 set(gca,'FontSize', fontsize);
+axis([-axexrange axexrange -axexrange axexrange]);
 
 isrenew = 1;
 start(t);
