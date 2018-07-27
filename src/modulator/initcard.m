@@ -1,16 +1,7 @@
 function cardInfo = initcard(mRegs, nDataNum)
 
-datanum = 249984;
-
-if nargin == 2
-    datanum = nDataNum;
-end
-
-deviceString = '/dev/spcm0';
-
-[success, cardInfo] = spcMInitDevice (deviceString);
+[success, cardInfo] = spcMInitCardByIdx (0);
 if (success == true)
-    % ----- print info about the board -----
     cardInfoText = spcMPrintCardInfo (cardInfo);
     fprintf (cardInfoText);
 else
@@ -18,13 +9,25 @@ else
     return;
 end
 
-% ----- check whether we support this card type in the example -----
-if (cardInfo.cardFunction ~= mRegs('SPCM_TYPE_AI')) && (cardInfo.cardFunction ~= mRegs('SPCM_TYPE_DI')) & (cardInfo.cardFunction ~= mRegs('SPCM_TYPE_DIO'))
+if ((cardInfo.cardFunction ~= mRegs('SPCM_TYPE_AO')) && (cardInfo.cardFunction ~= mRegs('SPCM_TYPE_DO')) && (cardInfo.cardFunction ~= mRegs('SPCM_TYPE_DIO')))
     spcMErrorMessageStdOut (cardInfo, 'Error: Card function not supported by this example\n', false);
     return;
 end
+% (1) Singleshot\n  (2) Continuous\n  (3) Single Restart\n 
+replayMode = 2; %  Continuous
+[ndatanum, sampleRate] = getdatanum();
+cardInfo.setMemsize = ndatanum;
+samplerate = sampleRate;
+timeout_ms = 10000;
 
-% ***** do card setup *****
+% ----- set the samplerate and internal PLL, no clock output -----
+[success, cardInfo] = spcMSetupClockPLL (cardInfo, samplerate, 0);  % clock output : enable = 1, disable = 0
+if (success == false)
+    spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupClockPLL:\n\t', true);
+    return;
+end
+fprintf ('\n ..... Sampling rate set to %.1f MHz\n', cardInfo.setSamplerate / 1000000);
+
 
 % ----- set channel mask for max channels -----
 if cardInfo.maxChannels == 64
@@ -35,51 +38,79 @@ else
     chMaskL = bitshift (1, cardInfo.maxChannels) - 1;
 end
 
-% ----- standard single, all channels, memsize=16k, posttrigge=8k -> pretrigger=8k  -----    
-[success, cardInfo] = spcMSetupModeRecStdSingle (cardInfo, chMaskH, chMaskL, datanum, datanum / 2.0);
-if (success == false)
-    spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupModeRecStdSingle:\n\t', true);
-    return;
-end
+switch replayMode
+    
+    case 1
+        % ----- singleshot replay -----
+        [success, cardInfo] = spcMSetupModeRepStdSingle (cardInfo, chMaskH, chMaskL, 64 * 1024);
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupModeRecStdSingle:\n\t', true);
+            return;
+        end
+        fprintf (' .............. Set singleshot mode\n');
+        
+        % ----- set software trigger, no trigger output -----
+        [success, cardInfo] = spcMSetupTrigSoftware (cardInfo, 0);  % trigger output : enable = 1, disable = 0
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
+            return;
+        end
+        fprintf (' ............. Set software trigger\n');
+        
+    case 2
+        % ----- endless continuous mode -----
+        [success, cardInfo] = spcMSetupModeRepStdLoops (cardInfo, chMaskH, chMaskL, 64 * 1024, 0);
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupModeRecStdSingle:\n\t', true);
+            return;
+        end
+        fprintf (' .............. Set continuous mode\n');
+        
+        % ----- set software trigger, no trigger output -----
+        [success, cardInfo] = spcMSetupTrigSoftware (cardInfo, 0);  % trigger output : enable = 1, disable = 0
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
 
-% ----- we try to set the samplerate to 10 MHz on internal PLL, no clock output -----
-if cardInfo.maxSamplerate >= 10000000
-    [success, cardInfo] = spcMSetupClockPLL (cardInfo, 10000000, 0);  % clock output : enable = 1, disable = 0
-else
-    % ----- set samplerate to the max samplerate of the card, if max samplerate is less than 10 MHz -----
-    [success, cardInfo] = spcMSetupClockPLL (cardInfo, cardInfo.maxSamplerate, 0); % clock output : enable = 1, disable = 0
-end
-if (success == false)
-    spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupClockPLL:\n\t', true);
-    return;
-end
+            return;
+        end
+        fprintf (' ............. Set software trigger\n Wait for timeout (%d sec) .....', timeout_ms / 1000);
 
-% ----- we set software trigger, no trigger output -----
-[success, cardInfo] = spcMSetupTrigSoftware (cardInfo, 0);  % trigger output : enable = 1, disable = 0
-if (success == false)
-    spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
-    return;
+    case 3
+        % ----- single restart (one signal on every trigger edge) -----
+        [success, cardInfo] = spcMSetupModeRepStdSingleRestart (cardInfo, chMaskH, chMaskL, 64 * 1024, 0);
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
+            return;
+        end
+        fprintf (' .......... Set single restart mode\n');
+        
+        % ----- set extern trigger, positive edge -----
+        [success, cardInfo] = spcMSetupTrigExternal (cardInfo, mRegs('SPC_TM_POS'), 1, 0, 1, 0);
+        if (success == false)
+            spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
+            return;
+        end
+        fprintf (' ............... Set extern trigger\n Wait for timeout (%d sec) .....', timeout_ms / 1000);
 end
 
 % ----- type dependent card setup -----
 switch cardInfo.cardFunction
-    % ----- analog acquistion card setup (1 = AnalogIn) -----
-    case 1
-        % ----- program all input channels to +/-1 V and 50 ohm termination (if it's available) -----
+
+    % ----- analog generator card setup -----
+    case mRegs('SPCM_TYPE_AO')
+        % ----- program all output channels to +/- 1 V with no offset and no filter -----
         for i=0 : cardInfo.maxChannels-1  
-            [success, cardInfo] = spcMSetupAnalogInputChannel (cardInfo, i, 500, 1, 0, 0);  
-            %setup for M3i card series including new features:
-            %[success, cardInfo] = spcMSetupAnalogPathInputCh (cardInfo, i, 0, 1000, 1, 0, 0, 0);  
+            [success, cardInfo] = spcMSetupAnalogOutputChannel (cardInfo, i, 1000, 0, 0, 16, 0, 0); % 16 = SPCM_STOPLVL_ZERO, doubleOut = disabled, differential = disabled
             if (success == false)
                 spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupInputChannel:\n\t', true);
                 return;
             end
         end
-          
-   % ----- digital acquisition card setup (3 = DigitalIn, 5 = DigitalIO) -----
-   case { 3, 5 }
-       % ----- set all input channel groups, no 110 ohm termination ----- 
-       for i=0 : cardInfo.DIO.groups-1
-           [~, cardInfo] = spcMSetupDigitalInput (cardInfo, i, 0);
+   
+   % ----- digital acquisition card setup -----
+   case { mRegs('SPCM_TYPE_DO'), mRegs('SPCM_TYPE_DIO') }
+       % ----- set all output channel groups ----- 
+       for i=0 : cardInfo.DIO.groups-1                             
+           [success, cardInfo] = spcMSetupDigitalOutput (cardInfo, i, mRegs('SPCM_STOPLVL_LOW'), 0, 3300, 0);
        end
 end
