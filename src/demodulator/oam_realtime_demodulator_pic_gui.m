@@ -28,26 +28,33 @@ global axes5handle
 global pic_t
 
 pic_t = 0;
-
-x = -100 : 0.5: 100;
-
+axexrange = 5;
+fontsize = 12;
 
 axes(handles.axes2);
-axes2handle = scatter([-8, 8], [-8, 8]);
+axes2handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axis([-axexrange axexrange -axexrange axexrange]);
+set(gca,'FontSize', fontsize);
 
 axes(handles.axes3);
-axes3handle = scatter([-8, 8], [-8, 8]);
+axes3handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axis([-axexrange axexrange -axexrange axexrange]);
+set(gca,'FontSize', fontsize);
 
 axes(handles.axes4);
-axes4handle = scatter([-8, 8], [-8, 8]);
+axes4handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axis([-axexrange axexrange -axexrange axexrange]);
+set(gca,'FontSize', fontsize);
 
 axes(handles.axes5);
-axes5handle = scatter([-8, 8], [-8, 8]);
+axes5handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axis([-axexrange axexrange -axexrange axexrange]);
+set(gca,'FontSize', fontsize);
 
 handles.output = hObject;
 guidata(hObject, handles);
 
-ImPeriod = 300 / 1000.0;  % 50ms
+ImPeriod = 6000 / 1000.0;  % 700ms
 timerPic = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
 set(handles.figure1, 'DeleteFcn', {@DeleteFcn, timerPic, handles});
 start(timerPic);
@@ -72,8 +79,8 @@ global axes5handle
 global pic_t
 
 channel_pic_en = 1;
-channel0_en = 1;
-channel1_en = 1;
+channel0_en = 0;
+channel1_en = 0;
 channel2_en = 0;
 channel3_en = 0;
 
@@ -82,42 +89,34 @@ if datanum ~= 0
     [~, sampleRate] = getdatanum();
     
     if channel_pic_en == 1
-        %DatCh_Pic = channel0Data;
-        %[~, Picture] = PicDemodulator(DatCh_Pic, sampleRate);
-        %png = Compress(Picture);
-        pic_t = pic_t + 0.02;
-        x = -100 : 0.5: 100;
-        x = x * sin(pic_t);
-        png = sin(x' * x);
-        imshow(png, 'parent', handles.axesPic);
+        DatCh_Pic = channel3Data;
+        [~, Picture] = PicDemodulator(DatCh_Pic, sampleRate);
+        png = Compress(Picture);
+%         pic_t = pic_t + 0.02;
+%         x = -100 : 0.5: 100;
+%         x = x * sin(pic_t);
+%         png = sin(x' * x);
+        imshow(png);
     end
     
     if channel0_en == 1
         [constellation0, check0] = PolitDemodulator(channel0Data, sampleRate);
-        if abs(check0) == 1023
-            set(axes2handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
-        end
+        set(axes2handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
     end
     
     if channel1_en == 1
         [constellation0, check0] = PolitDemodulator(channel1Data, sampleRate);
-        if abs(check0) == 1023
-            set(axes2handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
-        end
+        set(axes3handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
     end
     
     if channel2_en == 1
         [constellation0, check0] = PolitDemodulator(channel2Data, sampleRate);
-        if abs(check0) == 1023
-            set(axes2handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
-        end
+        set(axes4handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
     end
     
     if channel3_en == 1
         [constellation0, check0] = PolitDemodulator(channel3Data, sampleRate);
-        if abs(check0) == 1023
-            set(axes2handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
-        end
+        set(axes5handle, 'XData', constellation0(1,:), 'YData', constellation0(2,:));
     end
 end
 

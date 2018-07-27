@@ -54,7 +54,7 @@ handles.output = hObject;
 
 guidata(hObject, handles);
 
-ImPeriod = 5000 / 1000.0;  % 50ms
+ImPeriod = 6000 / 1000.0;  % 700ms
 t = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
 set(handles.figure1, 'DeleteFcn', {@DeleteFcn, t, handles});
 
@@ -93,18 +93,18 @@ channel1Data = Dat_Ch1;
 channel2Data = Dat_Ch2;
 channel3Data = Dat_Ch3;
 
-[QPSK, check] = PolitDemodulator(Dat_Ch3, sampleRate);
+%[QPSK, check] = DemodulatorPeefy(Dat_Ch3, sampleRate);
+
+QPSK = [1;2];
 
 set(figureRecDataCh0, 'XData', time(1:datashownum), 'YData', Dat_Ch0(1:datashownum));
 set(figureRecDataCh1, 'XData', time(1:datashownum), 'YData', Dat_Ch1(1:datashownum));
 set(figureRecDataCh2, 'XData', time(1:datashownum), 'YData', Dat_Ch2(1:datashownum));
 set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashownum));
-fprintf('Demodulator check: %d\n', check);
+
 checktotal = checktotal + 1;
-if abs(check) == 1023
-    set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(1,:));
-    checkright = checkright + 1;
-end
+set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(2,:));
+checkright = checkright + 1;
 
 fprintf('check total count : %d check right count : %d\n', checktotal, checkright);
 
@@ -149,7 +149,7 @@ global regs
 global errors
 global datashownum
 
-axexrange = 60;
+axexrange = 10;
 fontsize = 18;
 
 open_card(handles);
@@ -173,13 +173,9 @@ legend('Channel0', 'Channel1', 'Channel2','Channel3');
 set(gca, 'FontSize', fontsize);
 
 axes(handles.axes1);
-if abs(check) == 1023
-    figureRecDataCons = scatter(QPSK(1,:), QPSK(1,:));
-else
-    figureRecDataCons = scatter([-8, 8], [-8, 8]);
-end
+figureRecDataCons = scatter(QPSK(1,:), QPSK(2,:), 20, 'filled');
 set(gca,'FontSize', fontsize);
-axis([-axexrange axexrange -axexrange axexrange]);
+%axis([-axexrange axexrange -axexrange axexrange]);
 
 isrenew = 1;
 start(t);
