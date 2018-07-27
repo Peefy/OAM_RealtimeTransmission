@@ -1,4 +1,18 @@
-function testres=test(chdata)
+function [testres, result] = HongDemodulator(chdata)
+
+initial = zeros(1,7);             %初始值
+initial(7) = 1;
+feed = [1 0 0 0 1 0 0 1];             %反馈逻辑
+politLength = 127;
+c1 = ms_gen(initial,feed,politLength);
+polit = 2*c1-1; %导频
+
+initial2 = zeros(1,10);             %初始值
+initial2(10) = 1;
+feed2 = [1 0 0 0 0 0 0 1 0 0 1];             %反馈逻辑
+politLength2 = 1023;
+c2 = ms_gen(initial2,feed2,politLength2);
+polit2 = 2*c2-1; %数据
 
 userlength = 1023;
  politlength = 127;
@@ -101,5 +115,5 @@ Demodu2=Exp*Data1(Pind+politlength:Pind+politlength+userlength-1);
 % Cor = xcorr(Data1(1:end-politlength),polit);
 %  [PoMax,ind1] = max(abs(Cor));
 %  Exp2 = Cor(ind1)/PoMax;
-sum(polit2' .* Demodu2)
+result=sum(polit2' .* Demodu2);
 end

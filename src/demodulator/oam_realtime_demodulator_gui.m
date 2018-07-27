@@ -54,7 +54,7 @@ handles.output = hObject;
 
 guidata(hObject, handles);
 
-ImPeriod = 300 / 1000.0;  % 50ms
+ImPeriod = 5000 / 1000.0;  % 50ms
 t = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
 set(handles.figure1, 'DeleteFcn', {@DeleteFcn, t, handles});
 
@@ -102,7 +102,7 @@ set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashown
 fprintf('Demodulator check: %d\n', check);
 checktotal = checktotal + 1;
 if abs(check) == 1023
-    set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(2,:));
+    set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(1,:));
     checkright = checkright + 1;
 end
 
@@ -161,8 +161,7 @@ time = 0 : sampleTime : (ndatanum - 1) * sampleTime;
 [Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3] = ...
     card_read_data(card, regs, errors, sampleRate);
 [QPSK, check] = PolitDemodulator(Dat_Ch3, sampleRate);
-
-fprintf('Demodulator check ok! check:%d\n', check)
+fprintf('Demodulator check ok! check:%d\n', check);
 
 figureRecDataCh0 = plot(time(1:datashownum), Dat_Ch0(1:datashownum), 'b');
 hold on;
@@ -175,7 +174,7 @@ set(gca, 'FontSize', fontsize);
 
 axes(handles.axes1);
 if abs(check) == 1023
-    figureRecDataCons = scatter(QPSK(1,:), QPSK(2,:));
+    figureRecDataCons = scatter(QPSK(1,:), QPSK(1,:));
 else
     figureRecDataCons = scatter([-8, 8], [-8, 8]);
 end
