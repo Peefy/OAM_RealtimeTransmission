@@ -34,6 +34,7 @@ global channel0Data
 global channel1Data
 global channel2Data
 global channel3Data
+global ispic
 
 channel0Data = [];
 channel1Data = [];
@@ -49,12 +50,13 @@ checkright = 0;
 checktotal = 0;
 channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
 datashownum = 1000;
+ispic = 1;
 
 handles.output = hObject;
 
 guidata(hObject, handles);
 
-ImPeriod = 6000 / 1000.0;  % 700ms
+ImPeriod = 3000 / 1000.0;  % 700ms
 t = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
 set(handles.figure1, 'DeleteFcn', {@DeleteFcn, t, handles});
 
