@@ -1,9 +1,10 @@
 function [ndatanum, sampleRate]  = getdatanum()
-% 15ms
 global ispic
 if ispic == 1
+    % 15ms
     sampleTime = 15000e-6;
 else
+    % 600us
     sampleTime = 600e-6;
 end
 

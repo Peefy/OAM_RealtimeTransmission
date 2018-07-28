@@ -58,9 +58,9 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 if ispic == 1
-    ImPeriod = 3000 / 1000.0;  % 700ms
+    ImPeriod = 3000 / 1000.0;  % 3000ms
 else
-    ImPeriod = 600 / 1000.0;  % 700ms
+    ImPeriod = 600 / 1000.0;  % 600ms
 end
 
 t = timer('TimerFcn', {@timerCallback, handles}, 'ExecutionMode', 'fixedDelay', 'Period', ImPeriod);
