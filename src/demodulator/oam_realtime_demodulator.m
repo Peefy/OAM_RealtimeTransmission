@@ -22,8 +22,8 @@ for i = 1 : count
         card_read_data(cardInfo, mRegs, mErrors, sampleRate);
     if isshowplot ~= 0
         figure;
-        plot (t(1:1000), Dat_Ch0(1:1000), 'b', t(1:1000), Dat_Ch1(1:1000), 'g', ...
-            t(1:1000), Dat_Ch2(1:1000), 'r', t(1:1000), Dat_Ch3(1:1000), 'y');      
+        plot (t, Dat_Ch0, 'b', t, Dat_Ch1, 'g', ...
+            t, Dat_Ch2, 'r', t, Dat_Ch3, 'y');     
     end
     WriteToFile(Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3, fileheader, num2str(i));
 end

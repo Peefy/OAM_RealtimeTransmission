@@ -1,5 +1,5 @@
 function [ndatanum, sampleRate]  = getdatanum()
-global ispic
+[ispic, ~] = config();
 if ispic == 1
     % 15ms
     sampleTime = 15000e-6;
@@ -7,8 +7,7 @@ else
     % 600us
     sampleTime = 600e-6;
 end
-
-% 1250MHz
+% 625MHz
 sampleRate = 625e6;
 buffercount = sampleTime / (1 / sampleRate);
 scale = round(buffercount / 1024);
