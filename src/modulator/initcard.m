@@ -1,4 +1,4 @@
-function cardInfo = initcard(mRegs, nDataNum)
+function cardInfo = initcard(mRegs, nDatanum)
 
 [success, cardInfo] = spcMInitCardByIdx (0);
 if (success == true)
@@ -15,10 +15,10 @@ if ((cardInfo.cardFunction ~= mRegs('SPCM_TYPE_AO')) && (cardInfo.cardFunction ~
 end
 % (1) Singleshot\n  (2) Continuous\n  (3) Single Restart\n 
 replayMode = 2; %  Continuous
-[ndatanum, sampleRate] = getdatanum();
-cardInfo.setMemsize = ndatanum;
+[~, sampleRate, timeout] = getdatanum();
+cardInfo.setMemsize = nDatanum;
 samplerate = sampleRate;
-timeout_ms = 10000;
+timeout_ms = timeout;
 
 % ----- set the samplerate and internal PLL, no clock output -----
 [success, cardInfo] = spcMSetupClockPLL (cardInfo, samplerate, 0);  % clock output : enable = 1, disable = 0
@@ -38,11 +38,13 @@ else
     chMaskL = bitshift (1, cardInfo.maxChannels) - 1;
 end
 
+
+
 switch replayMode
     
     case 1
         % ----- singleshot replay -----
-        [success, cardInfo] = spcMSetupModeRepStdSingle (cardInfo, chMaskH, chMaskL, 64 * 1024);
+        [success, cardInfo] = spcMSetupModeRepStdSingle (cardInfo, chMaskH, chMaskL, nDatanum);
         if (success == false)
             spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupModeRecStdSingle:\n\t', true);
             return;
@@ -59,7 +61,7 @@ switch replayMode
         
     case 2
         % ----- endless continuous mode -----
-        [success, cardInfo] = spcMSetupModeRepStdLoops (cardInfo, chMaskH, chMaskL, 64 * 1024, 0);
+        [success, cardInfo] = spcMSetupModeRepStdLoops (cardInfo, chMaskH, chMaskL, nDatanum, 0);
         if (success == false)
             spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupModeRecStdSingle:\n\t', true);
             return;
@@ -77,7 +79,7 @@ switch replayMode
 
     case 3
         % ----- single restart (one signal on every trigger edge) -----
-        [success, cardInfo] = spcMSetupModeRepStdSingleRestart (cardInfo, chMaskH, chMaskL, 64 * 1024, 0);
+        [success, cardInfo] = spcMSetupModeRepStdSingleRestart (cardInfo, chMaskH, chMaskL, nDatanum, 0);
         if (success == false)
             spcMErrorMessageStdOut (cardInfo, 'Error: spcMSetupTrigSoftware:\n\t', true);
             return;
@@ -114,3 +116,5 @@ switch cardInfo.cardFunction
            [success, cardInfo] = spcMSetupDigitalOutput (cardInfo, i, mRegs('SPCM_STOPLVL_LOW'), 0, 3300, 0);
        end
 end
+
+
