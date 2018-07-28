@@ -80,23 +80,26 @@ global axes2handle
 global axes3handle
 global axes4handle
 global axes5handle
+global pic_t
 global ispic
 
 channel_pic_en = ispic;
 channel0_en = 1;
-channel1_en = 1;
-channel2_en = 1;
-channel3_en = 1;
+channel1_en = 0;
+channel2_en = 0;
+channel3_en = 0;
 
 datanum = length(channel0Data);
 if datanum ~= 0
     [~, sampleRate] = getdatanum();
+    
     if channel_pic_en == 1
         axes(handles.axes6);
         DatCh_Pic = channel0Data;
         [~, Picture] = PicDemodulator(DatCh_Pic, sampleRate);
         Compress(Picture);
     end
+    
     if channel0_en == 1
         if ispic == 1
             [constellation0, ~] = PicDemodulator(channel0Data, sampleRate);

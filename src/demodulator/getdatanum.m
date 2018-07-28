@@ -1,6 +1,12 @@
 function [ndatanum, sampleRate]  = getdatanum()
 % 15ms
-sampleTime = 15000e-6;
+global ispic
+if ispic == 1
+    sampleTime = 15000e-6;
+else
+    sampleTime = 600e-6;
+end
+
 % 1250MHz
 sampleRate = 625e6;
 buffercount = sampleTime / (1 / sampleRate);

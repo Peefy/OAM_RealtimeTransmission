@@ -50,8 +50,7 @@ checkright = 0;
 checktotal = 0;
 channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
 datashownum = 1000;
-conf = config();
-ispic = conf(1);
+ispic = config();
 
 handles.output = hObject;
 
