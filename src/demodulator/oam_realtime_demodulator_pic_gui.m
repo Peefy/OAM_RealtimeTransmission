@@ -76,6 +76,10 @@ global channel0Data
 global channel1Data
 global channel2Data
 global channel3Data
+global channel0QPSK
+global channel1QPSK
+global channel2QPSK
+global channel3QPSK
 global axes2handle
 global axes3handle
 global axes4handle
@@ -91,7 +95,7 @@ channel3_en = 1;
 datanum = length(channel0Data);
 if datanum ~= 0
     [~, sampleRate] = getdatanum();
-    [QPSK0, QPSK1, QPSK2, QPSK3] = PolitDemodulator2(channel0Data, channel3Data, sampleRate);
+    % [QPSK0, QPSK1, QPSK2, QPSK3] = PolitDemodulator2(channel0Data, channel3Data, sampleRate);
     if channel_pic_en == 1
         axes(handles.axes6);
         DatCh_Pic = channel3Data;
@@ -104,7 +108,7 @@ if datanum ~= 0
             set(axes2handle, 'XData', constellation0, 'YData', constellation0);
         else
             % [constellation0, ~] = PolitDemodulatorch0(channel0Data, sampleRate);
-            set(axes2handle, 'XData', QPSK0(1,:), 'YData', QPSK0(2,:));
+            set(axes2handle, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
         end       
     end
     
@@ -114,7 +118,7 @@ if datanum ~= 0
             set(axes3handle, 'XData', constellation0, 'YData', constellation0);
         else
             % [constellation0, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
-            set(axes3handle, 'XData', QPSK1(1,:), 'YData', QPSK1(2,:));
+            set(axes3handle, 'XData', channel1QPSK(1,:), 'YData', channel1QPSK(2,:));
         end   
     end
     
@@ -124,7 +128,7 @@ if datanum ~= 0
             set(axes4handle, 'XData', constellation0, 'YData', constellation0);
         else
             % [constellation0, ~] = PolitDemodulatorch2(channel2Data, sampleRate);
-            set(axes4handle, 'XData', QPSK2(1,:), 'YData', QPSK2(2,:));
+            set(axes4handle, 'XData', channel2QPSK(1,:), 'YData', channel2QPSK(2,:));
         end   
     end
     
@@ -136,7 +140,7 @@ if datanum ~= 0
         else
             %[constellation0, ~] = PolitDemodulatorch3(channel3Data, sampleRate);
             % QPSK
-            set(axes5handle, 'XData', QPSK3(1,:), 'YData', QPSK3(2,:));
+            set(axes5handle, 'XData', channel3QPSK(1,:), 'YData', channel3QPSK(2,:));
         end   
     end
 end

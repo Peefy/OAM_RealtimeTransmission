@@ -34,12 +34,21 @@ global channel0Data
 global channel1Data
 global channel2Data
 global channel3Data
+global channel0QPSK
+global channel1QPSK
+global channel2QPSK
+global channel3QPSK
 global ispic
 
 channel0Data = [];
 channel1Data = [];
 channel2Data = [];
 channel3Data = [];
+
+channel0QPSK = [];
+channel1QPSK = [];
+channel2QPSK = [];
+channel3QPSK = [];
 
 regs = spcMCreateRegMap();
 errors = spcMCreateErrorMap();
@@ -91,6 +100,11 @@ global channel2Data
 global channel3Data
 global ispic
 
+global channel0QPSK
+global channel1QPSK
+global channel2QPSK
+global channel3QPSK
+
 [ndatanum, sampleRate] = getdatanum();
 sampleTime = 1 / sampleRate;
 time = 0 : sampleTime : (ndatanum - 1) * sampleTime; 
@@ -105,7 +119,7 @@ channel3Data = Dat_Ch3;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    [channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
     % [QPSK, ~] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
 end
 
@@ -115,7 +129,7 @@ set(figureRecDataCh2, 'XData', time(1:datashownum), 'YData', Dat_Ch2(1:datashown
 set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashownum));
 
 checktotal = checktotal + 1;
-set(figureRecDataCons, 'XData', QPSK(1,:), 'YData', QPSK(2,:));
+set(figureRecDataCons, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
 checkright = checkright + 1;
 
 fprintf('check total count : %d check right count : %d\n', checktotal, checkright);
