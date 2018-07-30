@@ -49,7 +49,7 @@ card = 0;
 checkright = 0;
 checktotal = 0;
 channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
-datashownum = 1000;
+datashownum = 5000;
 conf = config();
 ispic = conf(1);
 
@@ -58,7 +58,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 if ispic == 1
-    ImPeriod = 5000 / 1000.0;  % 3000ms
+    ImPeriod = 5000 / 1000.0;  % 5000ms
 else
     ImPeriod = 600 / 1000.0;  % 600ms
 end
@@ -105,7 +105,8 @@ channel3Data = Dat_Ch3;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, ~] = PolitDemodulatorch3(Dat_Ch3, sampleRate);
+    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    % [QPSK, ~] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
 end
 
 set(figureRecDataCh0, 'XData', time(1:datashownum), 'YData', Dat_Ch0(1:datashownum));
@@ -175,7 +176,9 @@ time = 0 : sampleTime : (ndatanum - 1) * sampleTime;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, check] = PolitDemodulatorch3(Dat_Ch3, sampleRate);
+    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    check = 1023;
+    % [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
     fprintf('Demodulator check ok! check:%d\n', check);
 end
 

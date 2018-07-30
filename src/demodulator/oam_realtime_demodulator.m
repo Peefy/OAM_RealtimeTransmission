@@ -7,7 +7,7 @@ close all;
 isshowplot = 1;
 channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
 fileheader = 'Console';
-datashownum = 1000;
+datashownum = 5000;
 
 %% Init Card
 mRegs = spcMCreateRegMap();
