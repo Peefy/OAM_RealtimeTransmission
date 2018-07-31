@@ -41,7 +41,7 @@ cutoff = L*framelength*n1*n2;
 %% Ïà³ËÈ¥ÔØ²¨
 
 ts = [0:datalength-1]/fs;
-carrier = sin(2*pi*fc*ts);
+carrier = sin(2*pi*(fc+150)*ts);
 signal2 = Dat.*carrier;
 
 Wp = (fc/2)/(fs/2); % ½ØÖ¹ÆµÂÊ
@@ -72,7 +72,8 @@ for i = 1:(L-1)*framelength-1
     Cornew(i) = sum(signal1(i:politlength+i-1).*polit);
 end
 
-% Cor = xcorr(Data1(1:end-userlength),polit);
+Cor = xcorr(Data1(1:end-userlength),polit);
+[PoMax2,ind2] = max(abs(Cor));
 [PoMax,ind1] = max(abs(Cornew));
 Exp = Cornew(ind1)/PoMax;
 Demodu = Exp*Data1(ind1+politlength:ind1+framelength-1);
@@ -92,8 +93,9 @@ Fre = abs(fft(Signal.^2));
 Fre(1) = 0;
 [~,indF] = max(Fre);
 phi = atan(FreIm(indF)/FreRe(indF))/2;
-fc0 = F(indF)/2;
 % phi = 0;
+
+fc0 = F(indF)/2;
 
 carriernew = sin(2*pi*fc0*ts+phi);
 signal2new = Dat.*carriernew;
@@ -119,8 +121,18 @@ else
     check = check1;
 end
 
-if mod(length(constellation),2) == 0
-    QPSK = reshape(constellation,2,length(constellation)/2);
+% Random = randn;
+SIGN = sign(constellation);
+sigma = 1;
+% if(abs(Random)>0.6)
+constellationnew = max(constellation)*SIGN + sigma * randn(1,length(constellation));
+% else
+%     constellationnew = constellation;
+% end
+% constellationnew = constellation;
+
+if mod(length(constellationnew),2) == 0
+    QPSK = reshape(constellationnew,2,length(constellationnew)/2);
 else
-    QPSK = reshape([constellation,constellation(end)],2,length(constellation)/2+0.5);
+    QPSK = reshape([constellationnew,constellationnew(end)],2,length(constellationnew)/2+0.5);
 end

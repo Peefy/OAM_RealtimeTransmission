@@ -190,9 +190,9 @@ time = 0 : sampleTime : (ndatanum - 1) * sampleTime;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
-    check = 1023;
-    % [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
+    % [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    % check = 1023;
+    [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
     fprintf('Demodulator check ok! check:%d\n', check);
 end
 

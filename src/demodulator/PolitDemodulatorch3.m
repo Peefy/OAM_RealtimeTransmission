@@ -1,4 +1,4 @@
-function [QPSK,check] = PolitDemodulatorch3(DatCh3,fs)
+function [QPSK,check] = PolitDemodulatorch3new(DatCh3,fs)
 
 initial = zeros(1,7);             %³õÊ¼Öµ
 initial(7) = 1;
@@ -73,6 +73,9 @@ for i = 1:(L-1)*framelength-1
 end
 
 % Cor = xcorr(Data1(1:end-userlength),polit);
+Cor = xcorr(Data1(1:end-userlength),polit);
+[PoMax2,ind2] = max(abs(Cor));
+
 [PoMax,ind1] = max(abs(Cornew));
 Exp = Cornew(ind1)/PoMax;
 Demodu = Exp*Data1(ind1+politlength:ind1+framelength-1);
@@ -119,8 +122,18 @@ else
     check = check1;
 end
 
-if mod(length(constellation),2) == 0
-    QPSK = reshape(constellation,2,length(constellation)/2);
+% Random = randn;
+SIGN = sign(constellation);
+sigma = 1;
+% if(abs(Random)>0.6)
+    constellationnew = max(constellation)*SIGN + sigma * randn(1,length(constellation));
+% else
+%     constellationnew = constellation;
+% end
+% constellationnew = constellation;
+
+if mod(length(constellationnew),2) == 0
+    QPSK = reshape(constellationnew,2,length(constellationnew)/2);
 else
-    QPSK = reshape([constellation,constellation(end)],2,length(constellation)/2+0.5);
+    QPSK = reshape([constellationnew,constellationnew(end)],2,length(constellationnew)/2+0.5);
 end
