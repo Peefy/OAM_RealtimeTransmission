@@ -28,7 +28,8 @@ global pic_t
 global ispic
 
 pic_t = 0;
-axexrange = 30;
+axexrange = 38;
+axexrange_ch3 = 38;
 fontsize = 12;
 
 axes(handles.axes2);
@@ -48,7 +49,7 @@ set(gca,'FontSize', fontsize);
 
 axes(handles.axes5);
 axes5handle = scatter([-8, 8], [-8, 8], 20, 'filled');
-axis([-axexrange axexrange -axexrange axexrange]);
+axis([-axexrange_ch3  axexrange_ch3  -axexrange_ch3  axexrange_ch3 ]);
 set(gca,'FontSize', fontsize);
 
 handles.output = hObject;
@@ -107,7 +108,7 @@ if datanum ~= 0
             [constellation0, ~] = PicDemodulator(channel0Data, sampleRate);
             set(axes2handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch0(channel0Data, sampleRate);
+            [channel0QPSK, ~] = PolitDemodulatorch0(channel0Data, sampleRate);
             set(axes2handle, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
         end       
     end
@@ -117,7 +118,7 @@ if datanum ~= 0
             [constellation0, ~] = PicDemodulator(channel1Data, sampleRate);
             set(axes3handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
+            [channel1QPSK, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
             set(axes3handle, 'XData', channel1QPSK(1,:), 'YData', channel1QPSK(2,:));
         end   
     end
@@ -127,7 +128,7 @@ if datanum ~= 0
             [constellation0, ~] = PicDemodulator(channel2Data, sampleRate);
             set(axes4handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch2(channel2Data, sampleRate);
+            [channel2QPSK, ~] = PolitDemodulatorch2(channel2Data, sampleRate);
             set(axes4handle, 'XData', channel2QPSK(1,:), 'YData', channel2QPSK(2,:));
         end   
     end
@@ -138,7 +139,7 @@ if datanum ~= 0
             % BPSK
             set(axes5handle, 'XData', constellation0, 'YData', constellation0);
         else
-            %[constellation0, ~] = PolitDemodulatorch3(channel3Data, sampleRate);
+            [channel3QPSK, ~] = PolitDemodulatorch3(channel3Data, sampleRate);
             % QPSK
             set(axes5handle, 'XData', channel3QPSK(1,:), 'YData', channel3QPSK(2,:));
         end   

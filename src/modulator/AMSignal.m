@@ -1,0 +1,15 @@
+function data = AMSignal(datalength)
+f1 = 20e3;
+f2 = 62.5e6;
+fs = 625e6;
+n = datalength/2;
+ts = 1 / fs;
+T = ts * n;
+t = linspace(0, T, n);
+direct = 3; 
+bw = 200e6;
+tp = T; 
+mu = bw/tp;
+% s = (direct + cos(2 * pi * fs * t)) .* cos(2 * pi * f2 * t);
+s = 0 + [cos(pi *mu* t.^2),zeros(1,n)];
+data = s * 6666;

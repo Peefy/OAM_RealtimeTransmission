@@ -119,8 +119,10 @@ channel3Data = Dat_Ch3;
 if ispic == 1
     QPSK = [1;2];
 else
-    [channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    %[channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
     % [QPSK, ~] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
+    check = 1023;
+    [channel1QPSK, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
 end
 
 set(figureRecDataCh0, 'XData', time(1:datashownum), 'YData', Dat_Ch0(1:datashownum));
@@ -129,7 +131,7 @@ set(figureRecDataCh2, 'XData', time(1:datashownum), 'YData', Dat_Ch2(1:datashown
 set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashownum));
 
 checktotal = checktotal + 1;
-set(figureRecDataCons, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
+set(figureRecDataCons, 'XData', channel1QPSK(1,:), 'YData', channel1QPSK(2,:));
 checkright = checkright + 1;
 
 fprintf('check total count : %d check right count : %d\n', checktotal, checkright);
@@ -190,9 +192,9 @@ time = 0 : sampleTime : (ndatanum - 1) * sampleTime;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
-    check = 1023;
-    % [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
+    % [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    % check = 1023;
+    [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
     fprintf('Demodulator check ok! check:%d\n', check);
 end
 
