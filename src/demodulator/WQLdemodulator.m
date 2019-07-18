@@ -87,12 +87,12 @@ inflag=inn-in(1:length(in)-1);
 mm=find(inflag>500);
 
     
-if(length(mm)==0)
+if(isempty(mm))
 else
 nn=mm(2:length(mm));
-nnm=nn-mm(1:length(mm)-1);
+nnm=nn-mm(1:length(mm)-1)
 
-jl=find(nnm>20);
+jl=find(nnm>20)
 
 
 
@@ -104,7 +104,7 @@ end
 end 
 end
 
-if(length(mm)==0)
+if(isempty(mm))
 STA1=1;
 else
 STA1= inn(mm(jl(ppos))-2)*jiange ; 

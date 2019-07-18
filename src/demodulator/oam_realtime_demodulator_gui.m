@@ -67,7 +67,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 
 if ispic == 1
-    ImPeriod = 5000 / 1000.0;  % 5000ms
+    ImPeriod =5000 / 1000.0;  % 5000ms
 else
     ImPeriod = 600 / 1000.0;  % 600ms
 end
