@@ -3,7 +3,7 @@ function [ch0, ch1, ch2, ch3] = card_read_data(cardInfo, mRegs, mErrors, fs)
 
 % ----- we'll start and wait until the card has finished or until a timeout occurs -----
 timeout_ms = 5000;
-sampleRate = 625e6;
+sampleRate = 1250e6;
 if nargin == 4
     sampleRate = fs;
 end
@@ -81,10 +81,10 @@ else
     end
 end
 
-ch0 = Dat_Ch0 / 0.5;
-ch1 = Dat_Ch1 / 0.5;
-ch2 = Dat_Ch2 / 0.5;
-ch3 = Dat_Ch3 / 0.5;
+ch0 = double(Dat_Ch0 / 0.5 * 100);
+ch1 = double(Dat_Ch1 / 0.5 * 100);
+ch2 = double(Dat_Ch2 / 0.5 * 100);
+ch3 = double(Dat_Ch3 / 0.5 * 100);
 
 % ch0 = Dat_Ch0 ;
 % ch1 = Dat_Ch1 ;

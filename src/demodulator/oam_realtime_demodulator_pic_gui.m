@@ -28,27 +28,28 @@ global pic_t
 global ispic
 
 pic_t = 0;
-axexrange = 30;
+axexrange = 2;
+axexrange_ch3 = 2;
 fontsize = 12;
 
 axes(handles.axes2);
-axes2handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axes2handle = plot(0 ,0, 'o');
 axis([-axexrange axexrange -axexrange axexrange]);
 set(gca,'FontSize', fontsize);
 
 axes(handles.axes3);
-axes3handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axes3handle = plot(0 ,0, 'o');
 axis([-axexrange axexrange -axexrange axexrange]);
 set(gca,'FontSize', fontsize);
 
 axes(handles.axes4);
-axes4handle = scatter([-8, 8], [-8, 8], 20, 'filled');
+axes4handle = plot(0 ,0, 'o');
 axis([-axexrange axexrange -axexrange axexrange]);
 set(gca,'FontSize', fontsize);
 
 axes(handles.axes5);
-axes5handle = scatter([-8, 8], [-8, 8], 20, 'filled');
-axis([-axexrange axexrange -axexrange axexrange]);
+axes5handle = plot(0 ,0, 'o');
+axis([-axexrange_ch3  axexrange_ch3  -axexrange_ch3  axexrange_ch3 ]);
 set(gca,'FontSize', fontsize);
 
 handles.output = hObject;
@@ -95,52 +96,38 @@ channel3_en = 1;
 datanum = length(channel0Data);
 if datanum ~= 0
     [~, sampleRate] = getdatanum();
-    % [QPSK0, QPSK1, QPSK2, QPSK3] = PolitDemodulator2(channel0Data, channel3Data, sampleRate);
-    if channel_pic_en == 1
-        axes(handles.axes6);
-        DatCh_Pic = channel3Data;
-        [~, Picture] = PicDemodulator(DatCh_Pic, sampleRate);
-        Compress(Picture);
-    end
+     
+    [channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK, ~] = ...
+        WQLdemodulator(channel0Data, channel1Data, channel2Data, channel3Data, sampleRate);
     if channel0_en == 1
         if ispic == 1
-            [constellation0, ~] = PicDemodulator(channel0Data, sampleRate);
             set(axes2handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch0(channel0Data, sampleRate);
-            set(axes2handle, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
+            set(axes2handle, 'XData', real(channel0QPSK), 'YData', imag(channel0QPSK));
         end       
     end
     
     if channel1_en == 1
         if ispic == 1
-            [constellation0, ~] = PicDemodulator(channel1Data, sampleRate);
             set(axes3handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
-            set(axes3handle, 'XData', channel1QPSK(1,:), 'YData', channel1QPSK(2,:));
+            set(axes3handle, 'XData', real(channel1QPSK), 'YData',imag(channel1QPSK));
         end   
     end
     
     if channel2_en == 1
         if ispic == 1
-            [constellation0, ~] = PicDemodulator(channel2Data, sampleRate);
             set(axes4handle, 'XData', constellation0, 'YData', constellation0);
         else
-            % [constellation0, ~] = PolitDemodulatorch2(channel2Data, sampleRate);
-            set(axes4handle, 'XData', channel2QPSK(1,:), 'YData', channel2QPSK(2,:));
+            set(axes4handle, 'XData', real(channel2QPSK), 'YData', imag(channel2QPSK));
         end   
     end
     
     if channel3_en == 1
         if ispic == 1
-            [constellation0, ~] = PicDemodulator(channel3Data, sampleRate);
-            % BPSK
             set(axes5handle, 'XData', constellation0, 'YData', constellation0);
         else
-            %[constellation0, ~] = PolitDemodulatorch3(channel3Data, sampleRate);
-            % QPSK
-            set(axes5handle, 'XData', channel3QPSK(1,:), 'YData', channel3QPSK(2,:));
+            set(axes5handle, 'XData', real(channel3QPSK), 'YData', imag(channel3QPSK));
         end   
     end
 end

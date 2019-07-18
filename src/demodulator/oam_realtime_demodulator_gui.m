@@ -115,12 +115,15 @@ channel0Data = Dat_Ch0;
 channel1Data = Dat_Ch1;
 channel2Data = Dat_Ch2;
 channel3Data = Dat_Ch3;
-
+QPSK = [1;2];
 if ispic == 1
     QPSK = [1;2];
 else
-    [channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+    %[channel0QPSK, channel1QPSK, channel2QPSK, channel3QPSK] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
     % [QPSK, ~] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
+    check = 1023;
+    %[channel1QPSK, ~] = PolitDemodulatorch1(channel1Data, sampleRate);
+    [channel1QPSK,~,~,~, ~] = WQLdemodulator(channel0Data,channel1Data,channel2Data,channel3Data, sampleRate);
 end
 
 set(figureRecDataCh0, 'XData', time(1:datashownum), 'YData', Dat_Ch0(1:datashownum));
@@ -129,7 +132,7 @@ set(figureRecDataCh2, 'XData', time(1:datashownum), 'YData', Dat_Ch2(1:datashown
 set(figureRecDataCh3, 'XData', time(1:datashownum), 'YData', Dat_Ch3(1:datashownum));
 
 checktotal = checktotal + 1;
-set(figureRecDataCons, 'XData', channel0QPSK(1,:), 'YData', channel0QPSK(2,:));
+set(figureRecDataCons, 'XData', real(channel1QPSK), 'YData', imag(channel1QPSK));
 checkright = checkright + 1;
 
 fprintf('check total count : %d check right count : %d\n', checktotal, checkright);
@@ -176,7 +179,7 @@ global errors
 global datashownum
 global ispic
 
-axexrange = 10;
+axexrange = 2;
 fontsize = 18;
 
 open_card(handles);
@@ -190,9 +193,9 @@ time = 0 : sampleTime : (ndatanum - 1) * sampleTime;
 if ispic == 1
     QPSK = [1;2];
 else
-    [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
-    check = 1023;
-    % [QPSK, check] = PolitDemodulatorch3(Dat_Ch0, sampleRate);
+    % [QPSK, ~, ~, ~] = PolitDemodulator2(Dat_Ch0, Dat_Ch3, sampleRate);
+     check = 1023;
+   [QPSK, ~, ~, ~, check] =  WQLdemodulator(Dat_Ch0,Dat_Ch1,Dat_Ch2,Dat_Ch3, sampleRate);
     fprintf('Demodulator check ok! check:%d\n', check);
 end
 
@@ -206,9 +209,9 @@ legend('Channel0', 'Channel1', 'Channel2','Channel3');
 set(gca, 'FontSize', fontsize);
 
 axes(handles.axes1);
-figureRecDataCons = scatter(QPSK(1,:), QPSK(2,:), 20, 'filled');
+figureRecDataCons = plot(real(QPSK), imag(QPSK), 'o');
+axis([-axexrange axexrange -axexrange axexrange]);
 set(gca,'FontSize', fontsize);
-%axis([-axexrange axexrange -axexrange axexrange]);
 
 isrenew = 1;
 start(t);

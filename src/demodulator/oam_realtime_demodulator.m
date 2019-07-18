@@ -22,6 +22,11 @@ truecount = 0;
 for i = 1 : count
     [Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3] = ...
         card_read_data(cardInfo, mRegs, mErrors, sampleRate);
+    figure;
+    plot(Dat_Ch0);
+    [QPSK, ~] = WQLdemodulator(Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3, sampleRate);
+    figure;
+    plot(real(QPSK), imag(QPSK), 'o');
     if isshowplot ~= 0
         figure;
         if ispic == 0
