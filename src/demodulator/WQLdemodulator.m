@@ -68,18 +68,16 @@ Q_mix2 = filter(b,a,Q_signal2);
 
 jiange=32;
 
-
+zeroblockjudge = 1;
 ggg=I_mix2(1:jiange:suoyou);
 fff=Q_mix2(1:jiange:suoyou);
 i=0;
 for m=1:(suoyou/jiange)
-    if(abs(ggg(m))<2&&abs(fff(m))<2)
+    if(abs(ggg(m))<zeroblockjudge&&abs(fff(m))<zeroblockjudge)
        i=i+1;
         in(i)=m;
     end
 end
-
-
 
 ppos = 2;
 inn=in(2:length(in));
