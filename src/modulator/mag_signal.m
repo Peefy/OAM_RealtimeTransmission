@@ -8,18 +8,18 @@ channel_name = {'Dat_Ch0', 'Dat_Ch1', 'Dat_Ch2', 'Dat_Ch3'};
 mRegs = spcMCreateRegMap();
 mErrors = spcMCreateErrorMap();
 
-datalength = 1024 * 50;
+datalength = 2048;
 cardInfo = initcard(mRegs, datalength);
 
 %% User data store
 
-data = sin(linspace(0,4 * pi,datalength)) * 6666 + ...
-     sin(linspace(0,4 * pi,datalength) * 3) * 6666;
+data = AMSignal(datalength);
 Dat_Ch0 = data;
 Dat_Ch1 = data;
 Dat_Ch2 = data;
 Dat_Ch3 = data;
-[success, cardInfo, Dat_Ch2] = spcMCalcSignal (cardInfo, cardInfo.setMemsize, 1, 1, 100);
+plot(Dat_Ch2);
+[success, cardInfo, ~] = spcMCalcSignal (cardInfo, cardInfo.setMemsize, 1, 1, 100);
 card_write_data(Dat_Ch0, Dat_Ch1, Dat_Ch2, Dat_Ch3, cardInfo, mRegs)
 fprintf('data trans success!\r\n');
 
