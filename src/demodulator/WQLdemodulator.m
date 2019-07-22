@@ -40,7 +40,7 @@ STA = 1;   % 截取数据段起始点
 END = floor(suoyou);                        % 截取数据段接收点
 %%
 
-Signal = AI_Ch0(STA:END);                                   % 截取数据段\
+Signal = AI_Ch2(STA:END);                                   % 截取数据段\
 
 % 相乘去除载波
 ts = [0:floor(suoyou)-1]/fsr;
@@ -66,69 +66,93 @@ Q_signal2 = Signal.*Q_lo;
 Q_mix2 = filter(b,a,Q_signal2);
 
 
-jiange=32;
+% jiange=8;
+% 
+% zeroblockjudge =0.15;
+% ggg = I_mix2(1:jiange:suoyou);
+% fff = Q_mix2(1:jiange:suoyou);
+% i = 0;
+% for m=1:(suoyou/jiange)
+%     if(abs(ggg(m))<zeroblockjudge&&abs(fff(m))<zeroblockjudge)
+%        i=i+1;
+%         in(i)=m;
+%     end
+% end
+% 
+% ppos = 2;
+% inn=in(2:length(in));
+% inflag=inn-in(1:length(in)-1);
+% mm=find(inflag>100);
+% 
+%     
+% if(isempty(mm))
+% else
+% nn=mm(2:length(mm));
+% nnm=nn-mm(1:length(mm)-1)
+% 
+% jl=find(nnm>30)
+% 
+% 
+% 
+% for i=1:length(jl)-1
+% if((round(nnm(jl(i+1))/nnm(jl(i)))==2)&&jl(i)>2)
+%     ppos=i;
+%     break
+% end
+% end 
+% end
 
-zeroblockjudge = 1;
-ggg=I_mix2(1:jiange:suoyou);
-fff=Q_mix2(1:jiange:suoyou);
+zeroblackjudge=0.6;
+space=8;
+
+ggg=I_mix2(1:space:suoyou);
+fff=Q_mix2(1:space:suoyou);
 i=0;
-for m=1:(suoyou/jiange)
-    if(abs(ggg(m))<zeroblockjudge&&abs(fff(m))<zeroblockjudge)
+for channal=1:(suoyou/space)
+    if(abs(ggg(channal))<zeroblackjudge&&abs(fff(channal))<zeroblackjudge)
        i=i+1;
-        in(i)=m;
+        in(i)=channal;
     end
 end
 
-ppos = 2;
+
+ppos=2;
+
 inn=in(2:length(in));
+
 inflag=inn-in(1:length(in)-1);
-mm=find(inflag>500);
-
-    
-if(isempty(mm))
+mm=find(inflag>50);
+dd=0;
+if(length(mm)<=2)
+    ppos=2;
 else
+    
+    for(i=2:length(mm)-1)
+        if((inflag(mm(i)-2)<50&&inflag(mm(i)-1)<50))
+           dd=dd+1;
+             mmflag(dd)=i;
+        end
+    end
+mm=mm(mmflag);
 nn=mm(2:length(mm));
-nnm=nn-mm(1:length(mm)-1)
+nnm=nn-mm(1:length(mm)-1);
 
-jl=find(nnm>20)
-
-
-
-for i=1:length(jl)-1
-if((round(nnm(jl(i+1))/nnm(jl(i)))==2)&&jl(i)>2)
+for i=1:length(nnm)-1
+if((round(nnm(i+1)/nnm(i))==2)&&i>2)
     ppos=i;
     break
 end
 end 
+
 end
 
-if(isempty(mm))
+
+
+if(length(mm)<=2)
 STA1=1;
 else
-STA1= inn(mm(jl(ppos))-2)*jiange ; 
+STA1= inn(mm(ppos)-1)*space;
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 STA =STA1 ;   % 截取数据段起始点
 END = floor(STA + 2*Blocklengthr +Zerolengthr- 1);                        % 截取数据段接收点
 %%
@@ -174,7 +198,7 @@ Ws = fit/(fsr/2);         % 阻带截止频率
 Rp = 0.5;               % 通带衰减
 Rs = 40;                % 阻带衰减
 % 设计滤波器
-[n,Wn] = buttord(Wp,Ws,Rp,Rs);
+[n,Wn] = buttord(Wp, Ws, Rp, Rs);
 [b,a] = butter(n,Wn);
 
 % I路滤波
@@ -337,7 +361,6 @@ UserLength0 =(Blocklengtht)/fst*rs0;
 i = 0:round(UserLength0-1);
 I3_Dat = I_mix2(floor(i*N0+N0/2));
 Q3_Dat = Q_mix2(floor(i*N0+N0/2));
-U_Dat = zeros(1,floor(UserLength0));
 
 
 rs = 7e5;
